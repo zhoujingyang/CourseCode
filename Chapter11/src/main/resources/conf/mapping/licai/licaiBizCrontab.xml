@@ -1,0 +1,771 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapping.licaiCrontabMapping">
+
+
+    <!----><!----><!----><!----><!----><!----><!--注册用户数--><!----><!----><!----><!----><!----><!----><!----><!---->
+    <!--注册用户数，当日实时-->
+    <select id="getCurrentRegisterUsersCrontab" parameterType="String"
+            resultType="com.test.group.model.biz.crontab.TB_USER">
+        select count(DISTINCT Biz.TB_USER.ID) as currentRegisterUsers
+            from TB_USER
+                where #{endTime} > REGISTERDATE
+                and REGISTERDATE > CURDATE()
+        ;
+    </select>
+
+    <!--注册用户数，当月实时-->
+    <select id="getCurrentMonthRegisterUsersCrontab"  parameterType="String"
+            resultType="com.test.group.model.biz.crontab.TB_USER">
+        select count(DISTINCT Biz.TB_USER.ID) as currentMonthRegisterUsers
+            from
+                TB_USER
+            where  #{endTime} > REGISTERDATE
+                 and REGISTERDATE > DATE_ADD(curdate(),interval -day(curdate())+1 day);
+    </select>
+
+
+    <!--注册用户数，历史累计-->
+    <select id="getHistoryRegisterUsersCrontab" parameterType="String"
+            resultType="com.test.group.model.biz.crontab.TB_USER">
+        select count(DISTINCT Biz.TB_USER.ID) as historyRegisterUsers from TB_USER;
+    </select>
+
+    <!----><!----><!----><!----><!----><!----><!--活跃用户数--><!----><!----><!----><!----><!----><!----><!----><!---->
+    <!--活跃用户数，当日实时-->
+    <select id="getCurrentActiveUsersCrontab"  parameterType="String"
+            resultType="com.test.group.model.biz.crontab.TB_USER">
+        select count(DISTINCT Biz.TB_USER.ID) as currentActiveUsers from TB_USER
+            where #{endTime} > LASTLOGINDATE
+                and
+                    LASTLOGINDATE > CURDATE();
+    </select>
+
+    <!----><!----><!----><!----><!----><!----><!--充值用户数--><!----><!----><!----><!----><!----><!----><!----><!---->
+    <!--充值用户数，当日实时-->
+    <select id="getCurrentPayUsersCrontab"  parameterType="String"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+
+
+
+        select count(distinct user_id) as currentPayUsers
+        from TBL_FUND_OPERATE
+        where from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S') >= CURDATE()
+        and #{endTime} > from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')
+        and business_status = '40'
+        and role_type=1;
+
+    </select>
+    <!--充值用户数，新增注册且充值-->
+    <select id="getCurrentRegisterAndPayUsersCrontab"  parameterType="String"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+
+        select count(distinct a.user_id) as currentRegisterAndPayUsers
+        from TBL_FUND_OPERATE a join  TB_USER b
+        on a.user_id=b.ID
+        where
+            b.REGISTERDATE>= CURDATE()
+            and from_unixtime(a.create_time/1000,'%Y-%m-%d') >= CURDATE()
+            and a.business_status = '40'
+            and a.role_type=1
+        and #{endTime} > b.REGISTERDATE
+        and #{endTime} > from_unixtime(a.create_time/1000,'%Y-%m-%d %H:%i:%S')
+
+
+    </select>
+
+
+    <!--充值用户数，新增注册且充值用户数占比-->
+    <select id="getCurrentRegisterAndPayUsersScaleCrontab"  parameterType="String"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+
+
+        select (
+                (
+                        select count(distinct a.user_id) as currentRegisterAndPayUsers
+                            from TBL_FUND_OPERATE a join  TB_USER b
+                                 on a.user_id=b.ID
+                        where
+                                b.REGISTERDATE>= CURDATE()
+                                and from_unixtime(a.create_time/1000,'%Y-%m-%d') >= CURDATE()
+                                and a.business_status = '40'
+                                and a.role_type=1
+                                and #{endTime} > b.REGISTERDATE
+                                and #{endTime} > from_unixtime(a.create_time/1000,'%Y-%m-%d %H:%i:%S')
+                )
+        /
+                (
+                        select count(distinct user_id) as currentPayUsers
+                            from TBL_FUND_OPERATE
+                                where from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S') >= CURDATE()
+                                    and #{endTime} > from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')
+                                    and business_status = '40'
+                                    and role_type=1
+                )
+        ) as currentRegisterAndPayUsersScale
+
+    </select>
+
+
+
+    <!--充值用户数，月累计-->
+    <select id="getMonthPayUsersCrontab"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+
+
+
+
+        select count(distinct user_id) as monthPayUsers
+            from TBL_FUND_OPERATE
+        where
+            from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S') >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+            and #{endTime} > from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')
+            and business_status = '40'
+            and role_type=1;
+
+    </select>
+
+    <!--充值用户数，历史累计-->
+    <select id="getHistoryPayUsersCrontab"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+
+
+        select count(distinct user_id) as historyPayUsers
+            from TBL_FUND_OPERATE
+                where
+                    business_status = '40'
+                    and role_type=1;
+    </select>
+
+    <!----><!----><!----><!----><!----><!----><!--投资用户数--><!----><!----><!----><!----><!----><!----><!----><!---->
+    <!--投资用户数，当日实时-->
+    <select id="getCurrentInvestUsersCrontab" parameterType="String"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+<!--
+
+        select count(DISTINCT Biz.TBL_FUND_OPERATE.user_id) as currentInvestUsers
+                 from   TBL_FUND_OPERATE
+                 where
+                    update_time>=CURDATE()
+                    and #{endTime} > update_time
+                    and business_realm = 'INVEST'
+                    and business_status = 10
+                    and operate= 'FREEZE'
+                    and role_type= 'INVESTOR';
+
+-->
+
+        select count(DISTINCT Biz.TBL_FUND_OPERATE.user_id) as currentInvestUsers
+            from   TBL_FUND_OPERATE
+        where
+            business_realm = 'INVEST'
+            and business_status = 10
+            and operate= 'FREEZE'
+            and  from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S') >= CURDATE()
+            and role_type=1
+            and #{endTime} > from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')
+
+    </select>
+
+
+
+    <!--投资用户数，首投用户数   create_time -->
+    <select id="getFirstInvestUsersCrontab" parameterType="String"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+<!--
+        select count(DISTINCT t1.user_id)   as firstInvestUsers
+        from   TBL_FUND_OPERATE t1
+        inner join
+        (
+            select  min(create_time) as min_createtime ,
+                user_id from TBL_FUND_OPERATE t
+                    where  business_realm = 'INVEST' and business_status = 10
+                        and operate= 'FREEZE'  and role_type= 'INVESTOR'
+                        and NOT exists
+                            (
+                                select  1  from TBL_FUND_OPERATE  t1
+                                where  business_realm = 'INVEST'  and business_status = 60
+                                    and operate= 'IN'  and role_type= 'INVESTOR'
+                                    and t.user_id = t1.user_id
+                                    and t.business_id =t1.business_id
+                             )
+             group by user_id
+        )t2
+            on t1.user_id =t2.user_id and t1.create_time=t2.min_createtime
+                where  business_realm = 'INVEST'
+                    and  business_status = 10
+                    and operate= 'FREEZE'
+                    and from_unixtime(create_time/1000,'%Y-%m-%d')>=CURRENT_DATE()
+                    and #{endTime} > from_unixtime(create_time/1000,'%Y-%m-%d')
+                    and role_type= 'INVESTOR'
+
+
+        -->
+        select count(DISTINCT t1.user_id)   as firstInvestUsers
+        from   TBL_FUND_OPERATE t1
+        inner join
+        (
+            select  min(create_time) as min_createtime ,
+                user_id from TBL_FUND_OPERATE t
+                    where  business_realm = 'INVEST' and business_status = 10
+                        and operate= 'FREEZE'  and role_type= 1
+                        and NOT exists
+                            (
+                                select  1  from TBL_FUND_OPERATE  t1
+                                where  business_realm = 'INVEST'  and business_status = 60
+                                    and operate= 'IN'  and role_type= 1
+                                    and t.user_id = t1.user_id
+                                    and t.business_id =t1.business_id
+                             )
+             group by user_id
+        )t2
+            on t1.user_id =t2.user_id and t1.create_time=t2.min_createtime
+                where  business_realm = 'INVEST'
+                    and  business_status = 10
+                    and operate= 'FREEZE'
+                    and from_unixtime(create_time/1000,'%Y-%m-%d')>=CURRENT_DATE()
+                    and #{endTime} > from_unixtime(create_time/1000,'%Y-%m-%d')
+                    and role_type= 1
+
+
+    </select>
+
+
+
+    <!--投资用户数，首投用户数占比-->
+    <select id="getFirstInvestUsersScaleCrontab"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+
+  select (
+
+                (
+        select count(DISTINCT t1.user_id)   as firstInvestUsers
+            from   TBL_FUND_OPERATE t1
+            inner join
+            (
+                select  min(create_time) as min_createtime ,
+                user_id from TBL_FUND_OPERATE t
+                    where  business_realm = 'INVEST' and business_status = 10
+                    and operate= 'FREEZE'  and role_type= 'INVESTOR'
+                    and NOT exists
+                (
+                    select  1  from TBL_FUND_OPERATE  t1
+                    where  business_realm = 'INVEST'  and business_status = 60
+                    and operate= 'IN'  and role_type= 'INVESTOR'
+                    and t.user_id = t1.user_id
+                    and t.business_id =t1.business_id
+                )
+                group by user_id
+            )t2
+                on t1.user_id =t2.user_id and t1.create_time=t2.min_createtime
+                where  business_realm = 'INVEST'
+                    and  business_status = 10
+                    and operate= 'FREEZE'
+                    and from_unixtime(create_time/1000,'%Y-%m-%d')=CURRENT_DATE()
+                    and role_type= 'INVESTOR'
+        )
+
+        /
+                (
+
+                select count(DISTINCT Biz.TBL_FUND_OPERATE.user_id) as currentInvestUsers
+                    from   TBL_FUND_OPERATE
+                    where
+                        update_time>=CURDATE()
+                        and business_realm = 'INVEST'
+                        and business_status = 10
+                        and operate= 'FREEZE'
+                        and role_type= 'INVESTOR'
+                )
+        )  as firstInvestUsersScale;
+
+
+
+
+    </select>
+
+
+    <!--投资用户数，月累计用户数-->
+    <select id="getMounthInvestUsersCrontab" parameterType="String"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+
+
+
+        select count(DISTINCT t1.user_id)  as mounthInvestUsers
+        from   TBL_FUND_OPERATE t1
+        where
+            business_realm = 'INVEST'
+            and business_status = 10
+            and operate= 'FREEZE'
+            and
+                 from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S') >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+            and #{endTime} > from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')
+            and role_type= 1
+            and not exists
+                (select 1
+                    from   TBL_FUND_OPERATE t2
+                where
+                    business_realm = 'INVEST'
+                    and business_status = 60
+                    and operate= 'IN'
+                    and from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S') >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+                    and #{endTime} > from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')
+                    and role_type= 1
+                    and t1.user_id = t2.user_id
+                    and t2.business_id = t1.business_id
+                )
+
+
+    </select>
+
+
+    <!--投资用户数，历史累计用户数-->
+    <select id="getHistoryInvestUsersCrontab"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+
+
+        select count(DISTINCT t1.user_id) as  historyInvestUsers
+             from   TBL_FUND_OPERATE t1
+                 where
+                    business_realm = 'INVEST'
+                    and business_status = 10
+                    and operate= 'FREEZE'
+                    and role_type= 1
+                    and not exists
+            (select 1
+                from   TBL_FUND_OPERATE t2
+                where
+                    business_realm = 'INVEST'
+                    and business_status = 60
+                    and operate= 'IN'
+                    and role_type= 1
+                    and t1.user_id = t2.user_id
+                    and t2.business_id = t1.business_id
+            )
+
+    </select>
+
+
+    <!----><!----><!----><!----><!----><!----><!--投资金额--><!----><!----><!----><!----><!----><!----><!----><!---->
+    <!--投资金额，当日实时-->
+    <select id="getCurrentInvestMoneyCrontab" parameterType="String"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+ <!--   select (
+            select count(DISTINCT Biz.TBL_FUND_OPERATE.amount)／10000
+                    from   TBL_FUND_OPERATE
+                        where
+                            from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S') >= CURDATE()
+                            and #{endTime} > from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')
+                            and business_realm = 'INVEST'
+                            and business_status = 10
+                            and operate= 'FREEZE'
+                            and role_type= 1
+            )
+        as currentInvestMoney;
+-->
+        SELECT
+            (
+                SELECT
+                    sum(amount + packet_amount) / 10000
+                    FROM
+                    TBL_FUND_OPERATE
+                    WHERE
+                    from_unixtime(
+                            create_time / 1000 ,
+                            '%Y-%m-%d %H:%i:%S'
+                         ) >= CURDATE()
+                     AND #{endTime} > from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')
+
+                    AND business_realm = 'INVEST'
+                    AND business_status = 10
+                    AND operate = 'FREEZE'
+                    AND role_type = 1
+        ) AS currentInvestMoney;
+    </select>
+
+
+    <!--投资金额，首投金额-->
+    <select id="getFirstInvestMoneyCrontab" parameterType="String"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+
+        select sum(t1.amount+ t1.packet_amount)/10000   as firstInvestMoney
+            from   TBL_FUND_OPERATE t1
+                inner join
+                (select  min(create_time) as min_createtime ,
+                        user_id from TBL_FUND_OPERATE t
+                        where  business_realm = 'INVEST' and business_status = 10
+                            and operate= 'FREEZE'  and role_type= 1
+                            and NOT exists (select  1  from TBL_FUND_OPERATE  t1
+                        where  business_realm = 'INVEST'  and business_status = 60
+                            and operate= 'IN'  and role_type= 1
+                            and t.user_id = t1.user_id
+                            and t.business_id =t1.business_id
+                )
+                    group by user_id
+        )t2
+            on t1.user_id =t2.user_id and t1.create_time=t2.min_createtime
+                where  business_realm = 'INVEST'
+                and  business_status = 10
+                and operate= 'FREEZE'
+                and from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S') >= CURRENT_DATE()
+                and #{endTime} > from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')
+                and role_type= 1
+
+    </select>
+
+
+    <!--投资金额，首投金额占比-->
+    <select id="getFirstInvestMoneyScaleCrontab"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+
+
+
+        select (
+
+                    (
+                            select sum(t1.amount/10000)  as firstInvestMoney
+                            from   TBL_FUND_OPERATE t1
+                            inner join
+                        (
+                            select  min(create_time) as min_createtime ,
+                            user_id from TBL_FUND_OPERATE t
+                            where  business_realm = 'INVEST' and business_status = 10
+                            and operate= 'FREEZE'  and role_type= 'INVESTOR'
+                                and NOT exists
+                            (
+                                select  1  from TBL_FUND_OPERATE  t1
+                                where  business_realm = 'INVEST'  and business_status = 60
+                                and operate= 'IN'  and role_type= 'INVESTOR'
+                                and t.user_id = t1.user_id
+                                and t.business_id =t1.business_id
+                            )
+                                group by user_id
+                        )t2
+                        on t1.user_id =t2.user_id and t1.create_time=t2.min_createtime
+                        where  business_realm = 'INVEST'
+                        and  business_status = 10
+                        and operate= 'FREEZE'
+                        and from_unixtime(create_time/1000,'%Y-%m-%d')=CURRENT_DATE()
+                        and role_type= 'INVESTOR'
+                    )
+        /
+                (
+                    select count(DISTINCT Biz.TBL_FUND_OPERATE.amount)／10000
+                    from   TBL_FUND_OPERATE
+                    where
+                        update_time>=CURDATE()
+                        and business_realm = 'INVEST'
+                        and business_status = 10
+                        and operate= 'FREEZE'
+                        and role_type= 'INVESTOR'
+                )
+        ) as firstInvestMoneyScale;
+
+
+
+
+    </select>
+
+
+    <!--投资金额，月累计-->
+    <select id="getMonthInvestMoneyCrontab" parameterType="String"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+
+select (
+        select count(DISTINCT t1.amount)／10000
+        from   TBL_FUND_OPERATE t1
+            where
+                business_realm = 'INVEST'
+                and business_status = 10
+                and operate= 'FREEZE'
+                and from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')>=DATE_ADD(curdate(),interval -day(curdate())+1 day)
+                and #{endTime} >from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')
+                and role_type= 1
+                and not exists
+                    (select 1
+                        from   TBL_FUND_OPERATE t2
+                    where
+                        business_realm = 'INVEST'
+                        and business_status = 60
+                        and operate= 'IN'
+                        and from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')>=DATE_ADD(curdate(),interval -day(curdate())+1 day)
+                        and #{endTime} > from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')
+                        and role_type= 1
+                        and t1.user_id = t2.user_id
+                        and t2.business_id = t1.business_id
+        )
+        )as monthInvestMoney
+
+
+    </select>
+
+
+    <!--投资金额，历史累计-->
+    <select id="getHistoryInvestMoneyCrontab"
+            resultType="com.test.group.model.biz.crontab.TBL_FUND_OPERATE">
+
+
+
+select (
+        select count(DISTINCT t1.amount)／10000
+            from   TBL_FUND_OPERATE t1
+                where
+                    business_realm = 'INVEST'
+                    and business_status = 10
+                    and operate= 'FREEZE'
+                    and role_type= 1
+                    and not exists
+                        (select 1
+                            from   TBL_FUND_OPERATE t2
+                            where
+                                business_realm = 'INVEST'
+                                and business_status = 60
+                                and operate= 'IN'
+                                and role_type= 1
+                                and t1.user_id = t2.user_id
+                                and t2.business_id = t1.business_id
+                        )
+)as historyInvestMoney
+    </select>
+
+
+
+    <!----><!----><!----><!----><!----><!----><!--提现用户数--><!----><!----><!----><!----><!----><!----><!----><!---->
+    <!--提现用户数，当日实时-->
+
+    <select id="getCurrentWithdrawCashUsersCrontab"
+            resultType="com.test.group.model.biz.crontab.TBL_WITHDRAWAL">
+
+        select count(DISTINCT Biz.TBL_WITHDRAWAL.user_id) as currentWithdrawCashUsers
+            from TBL_WITHDRAWAL
+                where
+        from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S') >= CURDATE()
+                    and user_type=1
+
+    </select>
+
+    <!--提现用户数，月累计-->
+    <select id="getMonthWithdrawCashUsersCrontab"
+            resultType="com.test.group.model.biz.crontab.TBL_WITHDRAWAL">
+
+        select count(DISTINCT Biz.TBL_WITHDRAWAL.user_id) as monthWithdrawCashUsers
+        from TBL_WITHDRAWAL
+        where
+        from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')>=  DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and user_type=1
+
+    </select>
+
+
+
+    <!--提现用户数，历史累计-->
+    <select id="getHistoryWithdrawCashUsersCrontab"
+            resultType="com.test.group.model.biz.crontab.TBL_WITHDRAWAL">
+
+        select count(DISTINCT Biz.TBL_WITHDRAWAL.user_id) as historyWithdrawCashUsers
+        from TBL_WITHDRAWAL
+        where
+             user_type=1
+
+    </select>
+
+
+
+
+    <!----><!----><!----><!----><!----><!----><!--提现金额--><!----><!----><!----><!----><!----><!----><!----><!---->
+    <!--提现金额，当日实时-->
+    <select id="getCurrentWithdrawCashMoneyCrontab"
+            resultType="com.test.group.model.biz.crontab.TBL_WITHDRAWAL">
+
+        select (
+            select sum(Biz.TBL_WITHDRAWAL.amount)/10000
+                from TBL_WITHDRAWAL
+                where
+        from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S') >= CURDATE()
+                    and user_type= 1
+        )as currentWithdrawCashMoney
+    </select>
+    <!--提现金额，月累计-->
+    <select id="getMonthWithdrawCashMoneyCrontab"
+            resultType="com.test.group.model.biz.crontab.TBL_WITHDRAWAL">
+select (
+        select sum(Biz.TBL_WITHDRAWAL.amount)／10000
+        from TBL_WITHDRAWAL
+        where
+        from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S') >=  DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and user_type=1
+)as monthWithdrawCashMoney
+    </select>
+
+    <!--提现金额，历史累计-->
+    <select id="getHistoryWithdrawCashMoneyCrontab"
+            resultType="com.test.group.model.biz.crontab.TBL_WITHDRAWAL">
+select (
+        select sum(Biz.TBL_WITHDRAWAL.amount)／10000
+            from TBL_WITHDRAWAL
+             where
+                 user_type=1
+)as historyWithdrawCashMoney
+    </select>
+
+
+
+    <!----><!----><!----><!----><!----><!----><!--用户端动态--><!----><!----><!----><!----><!----><!----><!----><!---->
+    <!--用户端动态，注册用户数-->
+    <select id="getRegisterQuantityOfUserDynamicCrontab" parameterType="String"
+            resultType="com.test.group.model.biz.crontab.UserDynamic">
+
+        select count(DISTINCT Biz.TB_USER.ID) as registerQuantityOfUserDynamic
+            from TB_USER
+        where  #{endTime} > REGISTERDATE
+            and REGISTERDATE >=  #{startTime};
+
+    </select>
+    <!--用户端动态，活跃用户数-->
+    <select id="getActivityQuantityOfUserDynamicCrontab" parameterType="Map"
+            resultType="com.test.group.model.biz.crontab.UserDynamic">
+
+        select count(DISTINCT Biz.TB_USER.ID) as activityQuantityOfUserDynamic
+        from TB_USER
+        where  #{endTime} > LASTLOGINDATE
+        and LASTLOGINDATE > #{startTime};
+
+    </select>
+
+    <!--用户端动态，充值用户数-->
+    <select id="getRechargeQuantityOfUserDynamicCrontab" parameterType="Map"
+            resultType="com.test.group.model.biz.crontab.UserDynamic">
+
+
+        select count(DISTINCT Biz.TBL_RECHARGE.user_id) as rechargeQuantityOfUserDynamic
+        from TBL_RECHARGE
+        where
+            #{endTime} >= from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')
+            and from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')  >= #{startTime}
+            and business_status = '40'
+            and role_type=1
+    </select>
+
+    <!--用户端动态，投资用户数-->
+    <select id="getInvestQuantityOfUserDynamicCrontab" parameterType="Map"
+            resultType="com.test.group.model.biz.crontab.UserDynamic">
+
+<!--
+
+        select count(DISTINCT Biz.TBL_FUND_OPERATE.user_id) as investQuantityOfUserDynamic
+        from   TBL_FUND_OPERATE
+        where
+        #{endTime} > update_time
+        and update_time > #{startTime}
+        and business_realm = 'INVEST'
+        and business_status = 10
+        and operate= 'FREEZE'
+        and role_type= 'INVESTOR';
+-->
+
+
+        select count(DISTINCT Biz.TBL_FUND_OPERATE.user_id) as investQuantityOfUserDynamic
+        from   TBL_FUND_OPERATE
+        where
+        #{endTime} >= from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')
+        and from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')  >= #{startTime}
+        and business_realm = 'INVEST'
+        and business_status = 10
+        and operate= 'FREEZE'
+        and role_type= 1;
+
+    </select>
+
+    <!--用户端动态，提现用户数-->
+    <select id="getWithdrawQuantityOfUserDynamicCrontab" parameterType="Map"
+            resultType="com.test.group.model.biz.crontab.UserDynamic">
+
+
+        select count(DISTINCT Biz.TBL_WITHDRAWAL.user_id) as withdrawQuantityOfUserDynamic
+        from TBL_WITHDRAWAL
+        where
+        #{endTime} >= from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')
+        and from_unixtime(create_time/1000,'%Y-%m-%d %H:%i:%S')  >= #{startTime}
+        and user_type=1
+    </select>
+
+
+    <!----><!----><!----><!----><!----><!----><!--产品端动态--><!----><!----><!----><!----><!----><!----><!----><!---->
+    <!--产品动态，投资金额-->
+
+    <select id="getInvestMoneyOfProductDynamicCrontab" parameterType="String"
+            resultType="com.test.group.model.biz.crontab.ProductDynamic">
+
+
+
+
+        select  (case when (t2.rate+t2.rate_plus)/10000 &lt; 0.06 then '小于6%'
+        when (t2.rate+t2.rate_plus)/10000>=0.06 and (t2.rate+t2.rate_plus)/10000&lt;0.08 then '6%-8%'
+        when (t2.rate+t2.rate_plus)/10000>=0.08 and (t2.rate+t2.rate_plus)/10000&lt;0.1 then '8%-10%'
+        when (t2.rate+t2.rate_plus)/10000>=0.1  then '10%+'
+        end) as rate_structure,
+        (case when t2.type_key !='XSB' and t2.days+30*t2.months+360*t2.years &lt;=50 then '0-50天'
+        when t2.type_key !='XSB' and t2.days+30*t2.months+360*t2.years between 51 and 70 then '51-70天'
+        when t2.type_key !='XSB' and t2.days+30*t2.months+360*t2.years between 71 and 109 then '71-109天'
+        when t2.type_key !='XSB' and t2.days+30*t2.months+360*t2.years between 110 and 191 then '110-191天'
+        when t2.type_key !='XSB' and t2.days+30*t2.months+360*t2.years >190 then '191+'
+        when t2.type_key ='XSB' then '新手类'
+        end) as term_structure,
+        ((t1.amount+t1.packet_amount)/10000) as investMoneyOfProductDynamic
+        from TBL_FUND_OPERATE t1
+        left join TBL_LOAN t2 on t1.loan_id = t2.id
+        where t1.business_realm = 'INVEST'
+        and t1.business_status = 10
+        and t1.operate= 'FREEZE'
+        and from_unixtime(t1.create_time/1000,'%Y-%m-%d %H:%i:%S') >= CURDATE()
+        and t1.role_type=1
+        group by 1,2;
+
+    </select>
+
+
+<!--产品动态，首投-->
+    <select id="getFirstInvestMoneyOfProductDynamicCrontab" parameterType="String"
+            resultType="com.test.group.model.biz.crontab.ProductDynamic">
+
+
+
+        select  (case when (t2.rate+t2.rate_plus)/10000 &lt; 0.06 then '小于6%'
+        when (t2.rate+t2.rate_plus)/10000>=0.06 and (t2.rate+t2.rate_plus)/10000&lt;0.08 then '6%-8%'
+        when (t2.rate+t2.rate_plus)/10000>=0.08 and (t2.rate+t2.rate_plus)/10000&lt;0.1 then '8%-10%'
+        when (t2.rate+t2.rate_plus)/10000>=0.1  then '10%+'
+        end) as rate_structure,
+        (case when t2.type_key !='XSB' and t2.days+30*t2.months+360*t2.years &lt;=50 then '0-50天'
+        when t2.type_key !='XSB' and t2.days+30*t2.months+360*t2.years between 51 and 70 then '51-70天'
+        when t2.type_key !='XSB' and t2.days+30*t2.months+360*t2.years between 71 and 109 then '71-109天'
+        when t2.type_key !='XSB' and t2.days+30*t2.months+360*t2.years between 110 and 191 then '110-191天'
+        when t2.type_key !='XSB' and t2.days+30*t2.months+360*t2.years >190 then '191+'
+        when t2.type_key ='XSB' then '新手类'
+        end) as term_structure,
+        ((t1.amount+t1.packet_amount)/10000) as firstInvestMoneyOfProductDynamic
+        from TBL_FUND_OPERATE t1,(select user_id,min(from_unixtime(create_time/1000,'%Y-%m-%d %T')) date from TBL_FUND_OPERATE
+        WHERE business_realm = 'INVEST'
+        and business_status = 10
+        and operate= 'FREEZE' and role_type=1 group by user_id) t3,TBL_LOAN t2
+        where t1.business_realm = 'INVEST'
+        and t1.business_status = 10
+        and t1.operate= 'FREEZE'
+        and t1.user_id = t3.user_id
+        and t1.loan_id = t2.id
+        and from_unixtime(t1.create_time/1000,'%Y-%m-%d %H:%i:%S')= t3.date
+        and from_unixtime(t1.create_time/1000,'%Y-%m-%d %H:%i:%S') >= CURDATE()
+        and t1.role_type=1
+        and t1.user_id = t2.user_id
+
+
+
+        group by 1,2;
+
+
+
+    </select>
+
+    <!--产品动态，复投-->
+<!--复投＝总金额－首投-->
+</mapper>

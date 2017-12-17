@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapping.licaiBizMappingResult">
+
+
+    <!--用户概况表-->
+    <select id="getRealtimeIndexLicaiData"
+            resultType="com.test.group.model.biz.result.RealtimeIndexLicai">
+
+        select * from realtime_index_licai order by time_stamp desc limit 1;
+    </select>
+
+    <!--用户动态表-->
+    <select id="getDashUserActiveData"
+            resultType="com.test.group.model.biz.result.DashUserActive">
+
+        select * from dash_user_active  order by time desc limit 1;
+    </select>
+
+    <!--产品动态表-->
+    <select id="getRealtimeIndexProductData"
+            resultType="com.test.group.model.biz.result.RealtimeIndexProduct">
+
+        select * from realtime_index_product  order by time_stamp desc limit 1;
+    </select>
+
+
+</mapper>

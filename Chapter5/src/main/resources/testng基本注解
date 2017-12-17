@@ -1,3 +1,7 @@
+http://www.yiibai.com/testng/testng-groups.html#article-start
+
+
+
 注解	描述
 @BeforeSuite	在该套件的所有测试都运行在注释的方法之前，仅运行一次。
 @AfterSuite	在该套件的所有测试都运行在注释方法之后，仅运行一次。
