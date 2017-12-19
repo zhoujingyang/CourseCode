@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="TestAll">
+
+    <test name="ali">
+        <classes>
+            <class name="com.course.testng.suit.SuitConfig" />
+            <class name="com.course.testng.suit.LoginTest" />
+        </classes>
+    </test>
+
+    <test name="weixin">
+        <classes>
+            <class name="com.course.testng.suit.SuitConfig" />
+            <class name="com.course.testng.suit.PayTest" />
+        </classes>
+    </test>
+
+</suite>
