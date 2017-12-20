@@ -1,0 +1,13 @@
+[
+  {
+    "description":"获取cookies",
+    "request":{
+      "uri":"/getCookies"
+    },
+    "response":{
+      "cookies":{
+        "login":"true"
+      }
+    }
+  }
+]

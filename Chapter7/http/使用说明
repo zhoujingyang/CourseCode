@@ -1,0 +1,12 @@
+http://www.testtao.cn/?p=4595
+
+1、启动命令
+ java -jar <path-to-moco-runner> http -p <monitor-port> -c < configuration -file>
+<path-to-moco-runner>：moco-runner-0.11.0-standalone.jar包的路径
+<monitor-port>：http服务监听的端口
+<configuration -file>：配置文件路径
+
+具体使用：
+ java -jar ./moco-runner-0.11.0-standalone.jar http -p 9999 -c startup1.json
+
+ 2、

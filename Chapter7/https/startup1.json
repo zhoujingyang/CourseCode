@@ -1,0 +1,22 @@
+[
+  {
+    "description":"第一个mock例子",
+    "request":{
+      "uri":"/demo"
+    },
+    "response":{
+      "text":"欢迎学习moco框架"
+    }
+  },
+  {
+    "description":"模拟一个get请求",
+    "request":{
+      "uri":"/getdemo",
+      "method":"get"
+    },
+    "response":{
+      "text":"欢迎学习moco框架"
+    }
+  }
+
+]

@@ -1,0 +1,21 @@
+1、启动命令
+java -jar <path-to-moco-runner> https -p <monitor-port> -c < configuration -file> --https <path-to-cert.jks > --cert mocohttps --keystore mocohttps
+
+<path-to-moco-runner>：moco-runner-0.11.0-standalone.jar包的路径
+<monitor-port>：http服务监听的端口
+<configuration -file>：配置文件路径
+<path-to-cert.jks>：证书路径
+
+具体使用：
+ java -jar ./moco-runner-0.11.0-standalone.jar https -p 9999 -c startup1.json --https 路径 --cert mocohttps --keystore mocohttps
+
+ 2、
+腾讯证书申请
+ https://cloud.tencent.com/product/symantecssl
+
+
+ 产品-》域名与网站-》ssl证书
+
+ 点击购买"域名型免费版"
+
+ 购买过程中还需要进行域名购买解析。 太麻烦了！！！！
