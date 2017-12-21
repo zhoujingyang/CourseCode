@@ -25,6 +25,11 @@
             <artifactId>json</artifactId>
             <version>20170516</version>
         </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.10</version>
+        </dependency>
     </dependencies>
 
 

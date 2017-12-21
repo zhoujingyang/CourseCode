@@ -19,7 +19,7 @@
     "description":"这是一个带请求头的post请求",
     "request":{
       "uri":"/post/with/cookies",
-      "method":"get",
+      "method":"post",
       "cookies":{
         "login":"true"
       },
