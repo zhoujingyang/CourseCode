@@ -43,8 +43,8 @@ public class MyCookies {
 
     }
     @Test
-    public void test1() throws IOException {
-        String url = "http://localhost:9999/get/with/cookies";
+    public void getCookiesForGetMethod() throws IOException {
+        String url = "http://localhost:9999/getCookies";
 
         DefaultHttpClient client = new DefaultHttpClient();
 
@@ -60,7 +60,7 @@ public class MyCookies {
         for(Cookie cookie : cookieList){
             String name = cookie.getName();
             String value = cookie.getValue();
-            System.out.println("cookie name =" + name + "cookie value =" + value);
+            System.out.println("cookie name =" + name + "     cookie value =" + value);
         }
 
 
