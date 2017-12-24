@@ -3,10 +3,7 @@
     "description":"模拟一个带请求头的get请求",
     "request":{
       "uri":"/get/with/headers",
-      "method":"get",
-      "headers":{
-        "content-type":"application/json"
-      }
+      "method":"get"
     },
     "response":{
       "text":"这是一个get请求"
@@ -16,7 +13,7 @@
     "description":"这是一个带请求头的post请求",
     "request":{
       "uri":"/post/with/headers",
-      "method":"get",
+      "method":"post",
       "headers":{
         "content-type":"application/json"
       },

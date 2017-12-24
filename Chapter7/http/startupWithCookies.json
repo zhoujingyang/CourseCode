@@ -1,18 +1,27 @@
 [
   {
+    "description":"获取cookies",
+    "request":{
+      "uri":"/getCookies"
+    },
+    "response":{
+      "cookies":{
+        "login":"true"
+      },
+      "text":"返回信息带有cookies的get请求"
+    }
+  },
+  {
     "description":"模拟一个带请求头的get请求",
     "request":{
       "uri":"/get/with/cookies",
       "method":"get",
       "cookies":{
         "login":"true"
-      },
-      "headers":{
-        "content-type":"application/json"
       }
     },
     "response":{
-      "text":"这是一个get请求"
+      "text":"这是一个需要携带cookies才可以访问的get请求"
     }
   },
   {
