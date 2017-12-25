@@ -32,16 +32,18 @@
       "cookies":{
         "login":"true"
       },
-      "headers":{
-        "content-type":"application/json"
-      },
-      "queries":{
+      "json":{
         "name":"zhangsan",
         "sex":"20"
       }
     },
     "response":{
-      "text":"恭喜张三访问成功"
+      "status":200,
+
+      "json":{
+        "zhangsan":"success",
+        "status":"1"
+      }
     }
   }
 ]

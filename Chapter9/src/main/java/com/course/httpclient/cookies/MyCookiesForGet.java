@@ -16,35 +16,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-public class MyCookies {
+public class MyCookiesForGet {
 
-    @Test
-    public void getCookies() throws IOException {
-        String url = "http://localhost:9999/post/with/cookies";
-
-        DefaultHttpClient client = new DefaultHttpClient();
-        JSONObject paramJson = new JSONObject();
-        paramJson.put("zhangsan","20");
-        StringEntity entity = new StringEntity(paramJson.toString(),"utf-8");
-        entity.setContentType("application/json");
-        HttpPost post = new HttpPost(url);
-
-
-        post.setEntity(entity);
-        HttpResponse response = client.execute(post);
-        System.out.println(response.getEntity());
-
-        CookieStore store = client.getCookieStore();
-
-        List<Cookie> cookieList = store.getCookies();
-
-        for(Cookie cookie : cookieList){
-            String name = cookie.getName();
-            String value = cookie.getValue();
-            System.out.println("cookie name =" + name + "cookie value =" + value);
-        }
-
-    }
 
     /**
      * 获取无参数get方法中的cookies
@@ -71,7 +44,7 @@ public class MyCookies {
      * @return
      * @throws IOException
      */
-    private CookieStore getCookieStore(String url) throws IOException {
+    public CookieStore getCookieStore(String url) throws IOException {
 
         DefaultHttpClient client = new DefaultHttpClient();
 
