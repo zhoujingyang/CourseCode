@@ -58,4 +58,22 @@ public class GetMethod {
     /**
      * 带参数的get请求，验证cookie，返回信息，真正请求中需要查询数据库
      */
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public Map<String, Object> list(@RequestParam Integer start, @RequestParam Integer end) {
+        Map<String, Integer> params = Maps.newHashMap();
+        params.put("start", start);
+        params.put("end", end);
+        Map<String, Object> values = Maps.newHashMap();
+        values.put("data", sqlSessionTemplate.selectList("guowang.mapper.GetFeedbackList", params));
+        values.put("count", sqlSessionTemplate.selectOne("guowang.mapper.GetFeedbackCount"));
+        return values;
+    }
+
+    @RequestMapping(value = "news/{id}", method = RequestMethod.GET)
+    @ApiOperation(httpMethod = "GET", value = "返回新闻详情")
+    public News get(@PathVariable Integer id) {
+        return sqlSessionTemplate.selectOne("guowang.mapper.GetNews", id);
+    }
+
+
 }
