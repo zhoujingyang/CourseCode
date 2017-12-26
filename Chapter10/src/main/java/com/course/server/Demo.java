@@ -1,25 +1,26 @@
 package com.course.server;
 
+import lombok.extern.log4j.Log4j;
 import org.springframework.web.bind.annotation.*;
+import org.testng.annotations.Test;
 
-/**
- * Created by 大周 on 17/6/20.
- */
+@Log4j
 @RestController
-@RequestMapping("/demo")
 public class Demo {
 
     @RequestMapping(value = ("get"), method = RequestMethod.GET)
     public String getDemo(){
-
+        log.info("hahah");
         return "hello spring boot";
     }
 
+
+    //@RequestBody 默认为json格式的数据
     @RequestMapping(value = "/post",method = RequestMethod.POST)
-    public String postDemo(@RequestBody String str){
-        String result = "你输入的数据是 : " + str;
-        return  result;
+    public String postDemo(){
+        return  "post 访问成功";
     }
+
 
 
 
