@@ -9,6 +9,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostMethod {
 
 
+    /**
+     * 登录
+     * @return
+     */
+    public String login(){
+        return null;
+    }
+
+
+
     //@RequestBody 默认为json格式的数据
     @RequestMapping(value = "/post/with/param",method = RequestMethod.POST)
     public String postDemo(@RequestBody String str,@RequestBody String name){

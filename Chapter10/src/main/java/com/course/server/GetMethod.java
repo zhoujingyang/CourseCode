@@ -1,31 +1,61 @@
 package com.course.server;
 
-import com.sun.deploy.net.HttpResponse;
-import org.springframework.stereotype.Controller;
+import com.course.bean.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Objects;
 
 @RestController
 public class GetMethod {
 
 
     /**
-     * 登录获取cookies
+     * 返回cookies接口，无参数的请求
      */
-    @RequestMapping(value = "/login",method = RequestMethod.GET)
-    public String login(@CookieValue("true") String login) {
+    @RequestMapping(value = "/getCookies",method = RequestMethod.GET)
+    public String getCookies(HttpServletResponse response) {
 
-        System.out.println(login);
-        return "login + " + login;
+        Cookie hit = new Cookie("login", "true");
+
+        response.addCookie(hit);
+        return "success";
     }
 
 
-    @RequestMapping(value = "/get/with/param/{a}",method = RequestMethod.GET)
-    public void getWithParam(@PathVariable("a") String nickName){
-        System.out.println("name = " + nickName);
+    /**
+     * 要求携带cookie访问,无参数的请求
+     * 客户端访问需要加上域和路径 localhost  和  /
+     * @param httpRequest
+     * @return
+     */
+    @RequestMapping(value = "/getUserInfo",method = RequestMethod.GET)
+    public String getWithParam(HttpServletRequest httpRequest){
+        User user = null;
+        Cookie[] cookies = httpRequest.getCookies();
+        if(Objects.isNull(cookies)){
+            return "failed";
+        }
+        for(Cookie cookie : cookies){
+            //验证cookie信息,正常开发中，一般是从redis中取出cookie信息进行验证
+            if(cookie.getName().equals("login") && cookie.getValue().equals("true")){
+                user = new User();
+                user.setName("zhangsan");
+                user.setAge(20);
+                user.setSex("man");
+                return user.toString();
+            }
+
+        }
+
+        return "cookie failed";
+
     }
 
+
+    /**
+     * 带参数的get请求，验证cookie，返回信息，真正请求中需要查询数据库
+     */
 }
