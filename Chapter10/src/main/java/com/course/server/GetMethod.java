@@ -1,11 +1,13 @@
 package com.course.server;
 
 import com.course.bean.User;
+import com.google.common.collect.Maps;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -57,22 +59,39 @@ public class GetMethod {
 
     /**
      * 带参数的get请求，验证cookie，返回信息，真正请求中需要查询数据库
+     * http://localhost:8888/get/with/param?start=1&end=10  得到结果
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public Map<String, Object> list(@RequestParam Integer start, @RequestParam Integer end) {
+    @RequestMapping(value = "/get/with/param", method = RequestMethod.GET)
+    public Map<String, Integer> list(HttpServletRequest httpRequest,@RequestParam Integer start, @RequestParam Integer end) {
         Map<String, Integer> params = Maps.newHashMap();
         params.put("start", start);
         params.put("end", end);
-        Map<String, Object> values = Maps.newHashMap();
-        values.put("data", sqlSessionTemplate.selectList("guowang.mapper.GetFeedbackList", params));
-        values.put("count", sqlSessionTemplate.selectOne("guowang.mapper.GetFeedbackCount"));
-        return values;
+
+        //可以设置返回某商品列表
+
+
+        return params;
     }
 
-    @RequestMapping(value = "news/{id}", method = RequestMethod.GET)
-    @ApiOperation(httpMethod = "GET", value = "返回新闻详情")
-    public News get(@PathVariable Integer id) {
-        return sqlSessionTemplate.selectOne("guowang.mapper.GetNews", id);
+    /**
+     * 带路径参数的get请求，单个参数
+     * 访问http://localhost:8888/get/with/path/param/1   得到结果
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "get/with/path/param/{id}", method = RequestMethod.GET)
+    public String get(@PathVariable Integer id) {
+        return "您输入的是 : "+id;
+    }
+    /**
+     * 带路径参数的get请求，多个参数
+     * 访问http://localhost:8888/get/with/path/param/1/12   得到结果
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "get/with/path/param/{id}/{no}", method = RequestMethod.GET)
+    public String get(@PathVariable Integer id,@PathVariable Integer no) {
+        return "您输入的是 id = "+id + "   no = " + no;
     }
 
 
