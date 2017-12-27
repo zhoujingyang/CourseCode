@@ -27,6 +27,7 @@ public class Tests {
          */
         String statement = "mapping.UserMapping.getUser";//映射sql的标识字符串
         //执行查询返回一个唯一user对象的sql
+
 //        System.out.println(user.toString());
     }
 }

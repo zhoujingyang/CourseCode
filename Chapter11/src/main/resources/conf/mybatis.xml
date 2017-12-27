@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+    <!--这个配置指定了属性信息的配置文件-->
     <properties resource="conf/mysqlconf.properties"/>
     <environments default="development">
         <environment id="development">
@@ -8,51 +9,16 @@
             <!-- 配置数据库连接信息 -->
             <dataSource type="POOLED">
                 <property name="driver" value="${jdbc.driverClassName}" />
-                <property name="url" value="${test.jdbc.url}" />
-                <property name="username" value="${test.jdbc.username}" />
-                <property name="password" value="${test.jdbc.password}" />
-            </dataSource>
-        </environment>
-        <environment id="licaiinfo">
-            <transactionManager type="JDBC" />
-            <dataSource type="POOLED">
-                <property name="driver" value="${jdbc.driverClassName}" />
-                <property name="url" value="${licai.jdbc.info.url}" />
-                <property name="username" value="${licai.jdbc.info.username}" />
-                <property name="password" value="${licai.jdbc.info.password}" />
-            </dataSource>
-        </environment>
-
-        <environment id="licaibiz">
-            <transactionManager type="JDBC" />
-            <dataSource type="POOLED">
-                <property name="driver" value="${jdbc.driverClassName}" />
-                <property name="url" value="${licai.jdbc.biz.url}" />
-                <property name="username" value="${licai.jdbc.biz.username}" />
-                <property name="password" value="${licai.jdbc.biz.password}" />
-            </dataSource>
-        </environment>
-
-
-        <environment id="licairesult">
-            <transactionManager type="JDBC" />
-            <dataSource type="POOLED">
-                <property name="driver" value="${jdbc.driverClassName}" />
-                <property name="url" value="${licai.result.jdbc.url}" />
-                <property name="username" value="${licai.result.jdbc.username}" />
-                <property name="password" value="${licai.result.jdbc.password}" />
+                <property name="url" value="${com.course.jdbc.url}" />
+                <property name="username" value="${com.course.jdbc.username}" />
+                <property name="password" value="${com.course.jdbc.password}" />
             </dataSource>
         </environment>
 
     </environments>
     <mappers>
-        <!--理财-->
-        <mapper resource="conf/mapping/licai/licaiResult.xml"/>
-        <mapper resource="conf/mapping/licai/licaiBizRealTime.xml"/>
-        <mapper resource="conf/mapping/licai/licaiBizCrontab.xml"/>
+        <!--可以引入多个mapper来进行sql语句的分割-->
+        <mapper resource="conf/mapping/course.xml"/>
 
-        <!--销管-->
-        <mapper resource="conf/mapping/xiaoguan/xiaoguanRealTime.xml"/>
-        <mapper resource="conf/mapping/xiaoguan/xiaoguanResult.xml"/>
     </mappers>
 </configuration>

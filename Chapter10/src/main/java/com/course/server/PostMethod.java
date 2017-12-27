@@ -43,6 +43,15 @@ public class PostMethod {
     }
 
 
+    /**
+     * 1、jmeter的bin目录下jmeter.properties的文件
+     开放这个：CookieManager.save.cookies=true
+     2、Http请求下添加Http Cookie管理器（空的足够）
+     3、使用debug sampler就可以查看到cookie的名称
+     4、则在整个测试计划需要获取的cookie值为${COOKIE_***}，前面的COOKIE为jmeter命名规则
+     * 如果实际测试过程中，不知道cookie都有哪些。1，可以问开发。 2，使用fiddler工具抓
+     */
+
 
     //@RequestBody 默认为json格式的数据 spring会把参数和bean自动对应起来
     //要求带着cookies访问
