@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<!--parallel标示是否使用多线程，填methods表示使用多线程，thread-count表示使用的线程数量
+    如果parallel = false 就是不使用多线程
+-->
+
+<suite verbose="0" name="接口测试" parallel="methods" thread-count="1">
+    <parameter name="report.config" value="src/main/resources/config/report/extent-config.xml" />
+    <parameter name="system.info" value="com.tester.listener.MySystemInfo" />
+    <test name="＊＊＊接口测试结果" preserve-order="false">
+            <parameter name="p1" value="haha"/>
+        <classes>
+            <class name="com.tester.test.Demo" >
+                <methods>
+                    <include name="test"/>
+                    <include name="test11"/>
+                    <!--<include name="test1"/>-->
+                    <!--<include name="testGet" description="测试本地get请求"/>-->
+                    <!--<include name="testPost" description="测试本地post请求" />-->
+
+                </methods>
+            </class>
+        </classes>
+    </test>
+    <listeners>
+        <!--测试报告监听器-->
+        <listener class-name="com.vimalselvam.testng.listener.ExtentTestNgFormatter" />
+    </listeners>
+</suite>
