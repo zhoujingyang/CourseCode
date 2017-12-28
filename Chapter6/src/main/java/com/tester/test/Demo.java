@@ -1,12 +1,8 @@
-package tester.test;
+package com.tester.test;
 
-import com.tester.client.DemoConfClient;
-import com.tester.model.HttpDefaultConf;
 import com.vimalselvam.testng.NodeName;
 import com.vimalselvam.testng.listener.ExtentTestNgFormatter;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -14,43 +10,16 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.testng.Assert;
 import org.testng.Reporter;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.ResourceBundle;
 
 /**
  * Created by zjy on 17/5/23.
  */
 public class Demo {
 
-    private String getUrl;
-    private ResourceBundle bundle;
-    @BeforeTest
-    public void before(){
 
-        bundle = DemoConfClient.getDemoConf();
-        getUrl = bundle.getString("demo.get.url");
-    }
-
-    /**
-     * get请求
-     */
-    @Test
-   public  void testGet() throws IOException {
-
-        String result;
-        HttpGet get = new HttpGet(this.getUrl);
-        HttpClient client = new DefaultHttpClient();
-        HttpResponse response = client.execute(get);
-        result= EntityUtils.toString(response.getEntity(),"utf-8");
-
-        System.out.println(result);
-
-        System.out.println(bundle.getString("demo.get.testdata"));
-
-   }
 
    @Test
    public void testPost() throws IOException {
@@ -92,17 +61,6 @@ public class Demo {
        ExtentTestNgFormatter.getInstance().addInfoLogToNode("loglongljsdlkflsadlkd");
    }
 
-    public static void main(String[] args) {
-        int i = 1;
-        String j = "2";
-
-
-        System.out.println(i+j);
-
-        HttpDefaultConf conf = new HttpDefaultConf();
-        System.out.println(conf.getEncoding());
-
-    }
 
 
     @Test
