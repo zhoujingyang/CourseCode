@@ -1,3 +1,5 @@
+import com.course.client.MyClientForMysql;
+import com.course.model.User;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -29,5 +31,12 @@ public class Tests {
         //执行查询返回一个唯一user对象的sql
 
 //        System.out.println(user.toString());
+    }
+
+    @Test
+    public void test1(){
+        SqlSession session = MyClientForMysql.getClient();
+        User user =session.selectOne("mapping.course.getUserInfo");
+        System.out.println(user.getName());
     }
 }
